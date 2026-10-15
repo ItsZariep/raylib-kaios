@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<title>Game</title>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			background: #000;
+			overflow: hidden;
+		}
+		/* The game sizes its canvas to window.innerWidth x innerHeight, so filling the
+		screen is exact. object-fit keeps the aspect ratio if a game uses a fixed size. */
+		canvas {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			outline: none;
+		}
+	</style>
+
+	<!-- KaiOS / B2G: AudioContext expects an AudioChannel string, not an options
+		object, so miniaudio's new AudioContext({sampleRate}) throws. If the
+		options form fails, fall back to the no-argument constructor. -->
+	<script>
+		(function () {
+			var Orig = window.AudioContext || window.webkitAudioContext;
+			if (!Orig) return;
+			try { new Orig({ sampleRate: 44100 }).close(); return; } catch (e) {}
+			function Patched() { return new Orig(); }
+			Patched.prototype = Orig.prototype;
+			window.AudioContext = Patched;
+			window.webkitAudioContext = Patched;
+		})();
+	</script>
+</head>
+<body>
+	<canvas id="canvas" width="240" height="320" tabindex="-1"
+			oncontextmenu="event.preventDefault()"></canvas>
+
+	<script>
+		var Module = {
+			preRun: [],
+			postRun: [],
+			print: function (t) { console.log(t); },
+			printErr: function (t) { console.error(t); },
+			canvas: document.getElementById('canvas')
+		};
+	</script>
+
+	<!-- KaiOS soft keys. SoftLeft / SoftRight / Call arrive with event.key set but
+		usually keyCode 0, so raylib never sees them. We record them in globals that
+		the game polls from C (EM_ASM_INT):
+		window.softKeys[id] 1 while the key is held
+		window.softPressed[id] latched to 1 on key down; the game clears it when read
+		window.keyCount / window.lastKey last key reported, for on-screen debugging
+		id: 0 = SoftLeft, 1 = SoftRight, 2 = Call -->
+	<script>
+		(function () {
+			window.softKeys = [0, 0, 0];
+			window.softPressed = [0, 0, 0];
+			window.keyCount = 0;
+			window.lastKey = '';
+			var map = { SoftLeft: 0, SoftRight: 1, Call: 2 };
+
+			document.addEventListener('keydown', function (e) {
+				window.keyCount++;
+				window.lastKey = e.key + '/' + e.keyCode;
+				var id = map[e.key];
+				if (id === undefined) return;
+				e.preventDefault();
+				if (!window.softKeys[id]) window.softPressed[id] = 1;
+				window.softKeys[id] = 1;
+			}, true);
+
+			document.addEventListener('keyup', function (e) {
+				var id = map[e.key];
+				if (id === undefined) return;
+				e.preventDefault();
+				window.softKeys[id] = 0;
+			}, true);
+		})();
+	</script>
+
+	{{{ SCRIPT }}}
+</body>
+</html>

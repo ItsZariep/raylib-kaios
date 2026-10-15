@@ -1,0 +1,26 @@
+{
+  "version": "0.1.0",
+  "name": "My Raylib Game",
+  "description": "Raylib 4.5 Game",
+  "theme_color": "#eee",
+  "orientation": "natural",
+  "launch_path": "/index.html",
+  "cursor": false,
+  "type": "web",
+  "locales": {
+    "en-US": {
+      "name": "My Raylib Game",
+      "subtitle": "Raylib 4.5 Game",
+      "description": "audio should work"
+    }
+  },
+  "default_locale": "en-US",
+  "developer": {
+    "name": "ItsZariep",
+    "url": "https://github.com/itszariep/raylib-kaios"
+  },
+  "icons": {
+    "512": "/icon.png"
+  },
+  "origin": "app://ekqr.app"
+}
