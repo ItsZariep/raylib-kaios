@@ -1,6 +1,8 @@
 # Running raylib games on KaiOS
 
-Notes from getting a raylib game (a small endless runner) to run on KaiOS, which ships Firefox 48 (Gecko 48, B2G).
+Notes from getting a raylib game to run on KaiOS 2.5, which ships Firefox 48 (Gecko 48, B2G).
+
+> Since i don't have a KaiOS 3.x+ device and they support wasm natively, i guess they can run modern raylib without problems aside the input handling, not tested.
 
 
 - Use **emsdk 1.38.48-fastcomp**, not a modern emsdk.
